@@ -95,16 +95,24 @@ def retrieve_ship(pk):
     return serialized_ship
 
 
-def create_ship():
+def create_ship(ship_data):
     with sqlite3.connect("./shipping.db") as conn:
-        conn.row_factory.Row
         db_cursor = conn.cursor()
 
-        # TODO: write the SQL query to get the info
+        # Write the SQL query to insert the new ship
         db_cursor.execute(
             """
-        INSERT INTO Ship s 
-        VALUES (13, "The Black Pearl", 4)
-        """
+            INSERT INTO Ship (name, hauler_id)
+            VALUES (?, ?)
+            """,
+            (ship_data["name"], ship_data["hauler_id"]),
         )
-    # TODO: What does this return?
+
+        # Commit the transaction
+        conn.commit()
+
+        # Get the ID of the newly inserted ship
+        new_ship_id = db_cursor.lastrowid
+
+    # Return the ID of the newly created ship
+    return new_ship_id
